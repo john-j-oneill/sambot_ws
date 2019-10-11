@@ -4,18 +4,16 @@
 
   <!-- Map server -->
   <arg name="map_file" default="$(find sambot_navigation)/maps/forklift_map.yaml"/>
+  <arg name="scan_topic" default="mybot/laser/scan"/>
+  <arg name="base_frame" default="chassis"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
-
-  <!-- Place map frame at odometry frame -->
-  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
-      args="0 0 0 0 0 0 map odom 100"/>
 
   <!-- Localization -->
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
-    <remap from="scan" to="mybot/laser/scan"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
     <param name="odom_frame_id" value="odom"/>
     <param name="odom_model_type" value="diff-corrected"/>
-    <param name="base_frame_id" value="chassis"/>
+    <param name="base_frame_id" value="$(arg base_frame)"/>
     <param name="update_min_d" value="0.5"/>
     <param name="update_min_a" value="1.0"/>
   </node>
@@ -33,7 +31,7 @@
     
     <remap from="cmd_vel" to="cmd_vel"/>
     <remap from="odom" to="odom"/>
-    <remap from="scan" to="mybot/laser/scan"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
     <param name="move_base/DWAPlannerROS/yaw_goal_tolerance" value="1.0"/>
     <param name="move_base/DWAPlannerROS/xy_goal_tolerance" value="1.0"/>
 
